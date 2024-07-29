@@ -1,3 +1,6 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
 name: Build and deploy container app to Azure Web App - hatespeech-flask
 
 on:
@@ -19,28 +22,16 @@ jobs:
       - name: Log in to registry
         uses: docker/login-action@v2
         with:
-          registry: https://hatespeechinstance.azurecr.io/
-          username: ${{ secrets.AzureAppService_ContainerUsername_21f0839a5c084350921d3447b3afcf3d }}
-          password: ${{ secrets.AzureAppService_ContainerPassword_2aa58e38663d45df8d30765ed32ad4c9 }}
+          registry: https://hatespeechdetector.azurecr.io/
+          username: ${{ secrets.AzureAppService_ContainerUsername_6fac9973f76a42d0887e332cc8c11ba6 }}
+          password: ${{ secrets.AzureAppService_ContainerPassword_ddbb7a31827c4283980864a9f514f5cb }}
 
-      - name: Set up Docker Compose
-        run: sudo apt-get update && sudo apt-get install -y docker-compose
-
-      - name: Build Docker images with Docker Compose
-        run: docker-compose -f docker-compose.yml build
-
-      - name: List images
-        run: docker images
-
-      - name: Tag and Push app1 Docker image
-        run: |
-          docker tag hello_world_flask_app1:latest hatespeechinstance.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_21f0839a5c084350921d3447b3afcf3d }}/hatespeechinstance/hello-world-flask-app1:${{ github.sha }}
-          docker push hatespeechinstance.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_21f0839a5c084350921d3447b3afcf3d }}/hatespeechinstance/hello-world-flask-app1:${{ github.sha }}
-
-      - name: Tag and Push app2 Docker image
-        run: |
-          docker tag hello_world_flask_app2:latest hatespeechinstance.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_21f0839a5c084350921d3447b3afcf3d }}/hatespeechinstance/hello-world-flask-app2:${{ github.sha }}
-          docker push hatespeechinstance.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_21f0839a5c084350921d3447b3afcf3d }}/hatespeechinstance/hello-world-flask-app2:${{ github.sha }}
+      - name: Build and push container image to registry
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: hatespeechdetector.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_6fac9973f76a42d0887e332cc8c11ba6 }}/hatespeech-flask:${{ github.sha }}
+          file: ./src/Dockerfile.app1
 
   deploy:
     runs-on: ubuntu-latest
@@ -56,14 +47,5 @@ jobs:
         with:
           app-name: "hatespeech-flask"
           slot-name: "production"
-          publish-profile: ${{ secrets.AzureAppService_PublishProfile_e08c332857a14f84bc7e8db2ab715171 }}
-          images: "hatespeechinstance.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_21f0839a5c084350921d3447b3afcf3d }}/hatespeechinstance/hello-world-flask-app1:${{ github.sha }}"
-
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp2
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: "hatespeech-flask"
-          slot-name: "production"
-          publish-profile: ${{ secrets.AzureAppService_PublishProfile_e08c332857a14f84bc7e8db2ab715171 }}
-          images: "hatespeechinstance.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_21f0839a5c084350921d3447b3afcf3d }}/hatespeechinstance/hello-world-flask-app2:${{ github.sha }}"
+          publish-profile: ${{ secrets.AzureAppService_PublishProfile_4ae7545b0f994b678fee59e598a7b88f }}
+          images: "hatespeechdetector.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_6fac9973f76a42d0887e332cc8c11ba6 }}/hatespeech-flask:${{ github.sha }}"
