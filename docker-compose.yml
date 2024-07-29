@@ -7,9 +7,3 @@ services:
       dockerfile: src/Dockerfile.app1
     ports:
       - 80:80
-  app2:
-    build:
-      context: .
-      dockerfile: src/Dockerfile.app2
-    ports:
-      - 81:80

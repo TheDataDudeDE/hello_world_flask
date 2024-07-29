@@ -1,2 +1,5 @@
 # requirements.txt
-Flask
+fastapi
+pydantic
+joblib
+
